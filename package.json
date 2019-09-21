@@ -18,14 +18,16 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "coveralls": "^2.11.9",
-    "eslint": "^2.8.0",
+    "eslint": "^2.9.0",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.4",
     "sinon": "^1.17.2"
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "fs-extra": "^0.30.0",
-    "openframe-extension": "^0.1.0"
+    "fs-extra": "^8.1.0",
+    "openframe-extension": "^0.1.0",
+    "synchronize": "^2.0.0",
+    "unzip": "^0.1.11"
   }
 }
