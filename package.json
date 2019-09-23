@@ -1,7 +1,7 @@
 {
   "name": "openframe-processing",
-  "version": "0.1.6",
-  "description": "Openframe extension which adds support processing",
+  "version": "0.2.0",
+  "description": "Openframe extension which adds support for Processing",
   "main": "extension.js",
   "scripts": {
     "install": "./install.sh",
