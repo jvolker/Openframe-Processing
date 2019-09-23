@@ -99,6 +99,10 @@ function prepareSketch(_settings) {
         }
     }
     else debug('Unknown file format: ' + extension);
+    
+    let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')
+    // debug(pathToMainFile)
+    // fullScreen(pathToMainFile)
 
     return tmpSketchPath;
 }
@@ -112,6 +116,21 @@ function prepareSketch(_settings) {
 // }
 
 
+function fullScreen(pathToMainFile) {
+  
+  let data = `  
+    @Override
+    public void size(int width, int height) {
+      fullScreen();
+    }
+
+    @Override
+    public void size(int width, int height, String renderer) {
+      fullScreen(renderer);
+    }`
+  
+  fs.appendFileSync(pathToMainFile, data, 'utf8');
+}
 
 
 
