@@ -26,7 +26,7 @@ Then, in the [web app](https://openframe.io/stream)
 1. Click `Add Artwork`
 2. Make sure you give your artwork a title 
 3. Use `openframe-processing` as artwork format
-4. Enter the URL to your artwork into the field `URL where the artwork is hosted`. So far it supports URLs to PDE or ZIP files with packaged sketches.
+4. Enter the URL to your artwork into the field `URL where the artwork is hosted`. So far it supports URLs to PDE or ZIP files with packaged sketches. If you package your sketch using ZIP make sure the ZIP file is named the same as the sketch.
 5. Optionally enter a URL to a preview image of the sketch which is especially useful if you like to publish your artwork.
 6. Select the artwork by clicking the `push to frame` button
 
@@ -34,13 +34,15 @@ Then, in the [web app](https://openframe.io/stream)
 
 Currently, you have to upload your artwork to a publicly reachable webspace. If you don't have a webspace/server you could, as one out of many options, try Dropbox. Once it's uploaded to Dropbox, use the `Copy Dropbox Link`. You will end up with a URL like this `https://www.dropbox.com/s/vb17ehsdfqp2bjd/290317.jpg?dl=0`. Change the 0 at the end to 1 like this `https://www.dropbox.com/s/vb17ehsdfqp2bjd/290317.jpg?dl=1`, and you will be able to use the URL for Openframe.
 
-## Roadmap for this extension:
+## Todo
 
 - optional fullscreen
 - hide cursor at all times
 - change the background and stop button colour to black
 - support for contributed libraries
 - support for precompiled sketches
+- add unit tests
+- automatically find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
 
 ## Thanks
 
