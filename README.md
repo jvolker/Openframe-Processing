@@ -30,13 +30,25 @@ Then, in the [web app](https://openframe.io/stream)
 5. Optionally enter a URL to a preview image of the sketch which is especially useful if you like to publish your artwork.
 6. Select the artwork by clicking the `push to frame` button
 
+### Options
+
+***fullscreen***
+The extension loads all sketches in fullscreen by default. For some sketches this might not be useful. To disable fullscreen add the following to the `options` property of the artwork in the database: 
+
+```
+{
+  "fullscreen": false
+}
+```
+
+The Openframe webapp currently doesn't support this. But it's possible with the [API explorer](https://api.openframe.io/explorer/).
+
 ## Where to host artwork?
 
 Currently, you have to upload your artwork to a publicly reachable webspace. If you don't have a webspace/server you could, as one out of many options, try Dropbox. Once it's uploaded to Dropbox, use the `Copy Dropbox Link`. You will end up with a URL like this `https://www.dropbox.com/s/vb17ehsdfqp2bjd/290317.jpg?dl=0`. Change the 0 at the end to 1 like this `https://www.dropbox.com/s/vb17ehsdfqp2bjd/290317.jpg?dl=1`, and you will be able to use the URL for Openframe.
 
 ## Todo
 
-- optional fullscreen
 - hide cursor at all times
 - change the background and stop button colour to black
 - support for contributed libraries

@@ -28,17 +28,15 @@ module.exports = new Extension({
         'name': pjson.name,
         // this is what might get displayed to users
         'display_name': 'Processing (pde)',
-        // does this type of artwork need to be downloaded to the frame?
         'download': true,
-        // how do start this type of artwork? currently two token replacements, $filepath and $url
-        'start_command': function(args, tokens) {
+        'start_command': function(options, tokens) {
 
-            tokens['$tmpSketchPath'] = prepareSketch(tokens);
+            tokens['$tmpSketchPath'] = prepareSketch(options, tokens);
 
           // 1. clone template .xinitrc
             var filePath = _cloneTemplate(this.xinitrcTplPath),
-          // 2. parse options from args into tokens
-                _tokens = _extendTokens(args, tokens);
+          // 2. parse options from options into tokens
+                _tokens = _extendTokens(options, tokens);
           // 3. replace tokens in .xinitrc
             _replaceTokens(filePath, _tokens);
           // 4. return xinit
@@ -60,9 +58,9 @@ module.exports = new Extension({
 });
 
 
-function prepareSketch(_settings) {
-    let filename = _settings.$filename,
-        filepath = _settings.$filepath, // downloaded file
+function prepareSketch(_options, _tokens) {
+    let filename = _tokens.$filename,
+        filepath = _tokens.$filepath, // downloaded file
         extension = path.extname(filename),
         filebasename = path.basename(filename, extension),
         tmpSketchPath = path.join(tmpDir, filebasename);
@@ -101,20 +99,22 @@ function prepareSketch(_settings) {
     else debug('Unknown file format: ' + extension);
     
     let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')
-    // debug(pathToMainFile)
-    // fullScreen(pathToMainFile)
+    
+    // console.log(_options)
+    // console.log(typeof _options.fullscreen === 'undefined')
+    
+    if (typeof _options.fullscreen === 'undefined' || _options.fullscreen) fullScreen(pathToMainFile)
 
     return tmpSketchPath;
 }
 
-// function cleanUp() {
-//   fs.readdir(tmpDir, (err, files) => {
-//     files.forEach(file => {
-//       console.log(file)
-//     })
-//   })
-// }
-
+function cleanUp() {
+  fs.readdir(tmpDir, (err, files) => {
+    files.forEach(file => {
+      debug(file)
+    })
+  })
+}
 
 function fullScreen(pathToMainFile) {
   
@@ -135,19 +135,19 @@ function fullScreen(pathToMainFile) {
 
 
 /**
- * extend the tokens with expected values from args
+ * extend the tokens with expected values from options
  *
- * @param {object} args Arguments provided to this extension
+ * @param {object} options Arguments provided to this extension
  * @param {object} tokens Original tokens for this extension
  */
-function _extendTokens(args, tokens) {
+function _extendTokens(options, tokens) {
     var _tokens = {},
-        _args = args,
+        _options = options,
         expectedKeys = ['flags'];
 
-    // if args is not an object, we'll just use an empty one
-    if (typeof(args) !== 'object') {
-        _args = {};
+    // if options is not an object, we'll just use an empty one
+    if (typeof(options) !== 'object') {
+        _options = {};
     }
 
     // shallow-copy the original tokens object
@@ -155,11 +155,11 @@ function _extendTokens(args, tokens) {
         _tokens[key] = tokens[key];
     }
 
-    // copy expected arguments from args to the new tokens object
+    // copy expected arguments from options to the new tokens object
     // defaulting to an emptystring
     for (let key of expectedKeys) {
         // prepend keys with a dollar-sign for template-replacement
-        _tokens['$'+key] = _args[key] || '';
+        _tokens['$'+key] = _options[key] || '';
     }
 
     return _tokens;
