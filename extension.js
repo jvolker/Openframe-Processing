@@ -98,6 +98,7 @@ function prepareSketch(_options, _tokens) {
     }
     else debug('Unknown file format: ' + extension);
     
+    // TODO: find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
     let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')
     
     // console.log(_options)

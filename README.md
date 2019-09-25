@@ -49,12 +49,11 @@ Currently, you have to upload your artwork to a publicly reachable webspace. If 
 
 ## Todo
 
-- hide cursor at all times
+- hide cursor at all times (even when mouse is moved)
 - change the background and stop button colour to black
 - support for contributed libraries
 - support for precompiled sketches
 - add unit tests
-- automatically find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
 
 ## Thanks
 
