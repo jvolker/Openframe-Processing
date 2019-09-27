@@ -50,7 +50,6 @@ Currently, you have to upload your artwork to a publicly reachable webspace. If 
 ## Todo
 
 - hide cursor at all times (even when mouse is moved)
-- change the background and stop button colour to black
 - support for contributed libraries
 - support for precompiled sketches
 - add unit tests
