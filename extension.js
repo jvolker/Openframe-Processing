@@ -5,9 +5,13 @@ var pjson = require('./package.json'),
     fs = require('fs-extra'),
     path = require('path'),
     unzip = require('unzip'),
-    sync = require('synchronize');
+    sync = require('synchronize'),
+    replace = require('replace-in-file'),
+    os = require('os');
 
 let tmpDir = '/tmp/';
+// TODO: the preferences are stored in different path on each OS. This currently only works on the Pi
+let pathToProcessingPreferencesTxt = path.join(os.homedir(),".processing/preferences.txt");
 
 /**
  *
@@ -104,6 +108,9 @@ function prepareSketch(_options, _tokens) {
     // console.log(_options)
     // console.log(typeof _options.fullscreen === 'undefined')
     
+    // TODO: This changes the processing settings permanently. Use command line arguments instead, once this is solved: https://github.com/processing/processing/issues/5921
+    hideBackground()
+    
     if (typeof _options.fullscreen === 'undefined' || _options.fullscreen) fullScreen(pathToMainFile)
 
     return tmpSketchPath;
@@ -133,6 +140,19 @@ function fullScreen(pathToMainFile) {
   fs.appendFileSync(pathToMainFile, data, 'utf8');
 }
 
+function hideBackground() {
+  debug('hideBackground')
+    
+  // change color of background and stop button to black
+  var results = replace.sync({
+    files: pathToProcessingPreferencesTxt,
+    from: [ /(run.present.bgcolor=)(.*)/g , /(run.present.stop.color=)(.*)/g ],
+    to: '$1#000000',
+    // dry: true
+  });
+   
+  debug(results);
+}
 
 
 /**

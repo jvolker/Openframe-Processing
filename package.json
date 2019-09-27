@@ -27,11 +27,12 @@
     "debug": "^2.2.0",
     "fs-extra": "^8.1.0",
     "openframe-extension": "^0.1.0",
+    "replace-in-file": "^4.1.3",
     "synchronize": "^2.0.0",
     "unzip": "^0.1.11"
   },
   "repository": {
-    "type" : "git",
-    "url" : "github:jvolker/Openframe-Processing"
+    "type": "git",
+    "url": "github:jvolker/Openframe-Processing"
   }
 }
