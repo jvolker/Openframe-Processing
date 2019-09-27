@@ -151,7 +151,7 @@ function hideBackground() {
     // dry: true
   });
    
-  debug(results);
+  // debug(results);
 }
 
 
