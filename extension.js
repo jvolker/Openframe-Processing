@@ -4,8 +4,7 @@ var pjson = require('./package.json'),
     execSync = require('child_process').execSync,
     fs = require('fs-extra'),
     path = require('path'),
-    unzip = require('unzip'),
-    sync = require('synchronize'),
+    DecompressZip = require('decompress-zip')
     replace = require('replace-in-file'),
     os = require('os');
 
@@ -34,23 +33,31 @@ module.exports = new Extension({
         'display_name': 'Processing (pde)',
         'download': true,
         'start_command': function(options, tokens) {
-
-            tokens['$tmpSketchPath'] = prepareSketch(options, tokens);
-
-          // 1. clone template .xinitrc
-            var filePath = _cloneTemplate(this.xinitrcTplPath),
-          // 2. parse options from options into tokens
-                _tokens = _extendTokens(options, tokens);
-          // 3. replace tokens in .xinitrc
-            _replaceTokens(filePath, _tokens);
-          // 4. return xinit
-            var command = 'xinit ' + filePath;
-          // console.log(command)
-
-            return command;
+          var thisExtension = this
+          return new Promise(function(resolve, reject) {
+            
+             prepareSketch(options, tokens).then(function(result){
+               tokens['$tmpSketchPath'] = result
+               
+               // 1. clone template .xinitrc
+               debug("clone template")
+               var filePath = _cloneTemplate(thisExtension.xinitrcTplPath)
+               // 2. parse options from options into tokens
+               debug("extend tokens")
+               var _tokens = _extendTokens(options, tokens);
+               // 3. replace tokens in .xinitrc
+               debug("replace tokens")
+               _replaceTokens(filePath, _tokens);
+               // 4. return xinit
+               debug("build command")
+               var command = 'xinit ' + filePath;
+               // console.log(command)
+               return resolve(command);
+            });
+          })
         },
         // how do we stop this type of artwork?
-        'end_command': 'pkill -f X',
+        'end_command': 'pkill -f X && pkill -f java',
         // function () {
         //   // cleanUp()
         //   console.log(end_command)
@@ -63,6 +70,8 @@ module.exports = new Extension({
 
 
 function prepareSketch(_options, _tokens) {
+  return new Promise(function(resolve, reject) {
+  
     let filename = _tokens.$filename,
         filepath = _tokens.$filepath, // downloaded file
         extension = path.extname(filename),
@@ -76,44 +85,57 @@ function prepareSketch(_options, _tokens) {
     // debug(tmpSketchPath)
 
     if (extension == '.pde') {
-        debug('copy sketch to parent folder');
+      debug('copy sketch to parent folder');
 
-        fs.mkdirp(tmpSketchPath);
-        fs.copySync(filepath, path.join(tmpSketchPath,filename));
+      fs.mkdirp(tmpSketchPath);
+      fs.copySync(filepath, path.join(tmpSketchPath,filename));
     }
     else if (extension == '.zip') {
-        debug('unzip sketch');
+      debug('unzip sketch');
+      
+      var unzipper = new DecompressZip(filepath)
 
-        sync.fiber(function() {
-            data = sync.await(
-          fs.createReadStream(filepath)
-          .pipe(unzip.Extract({path: tmpSketchPath}))
-          .on('finish', sync.defer())
-        );
-        });
+      unzipper.on('error', function (err) {
+        console.log('Caught an error');
+      });
 
-      //in case it is wrapped by a folder: unwrap it
+      unzipper.on('extract', function (log) {
+        debug('Finished extracting');
+        
+        //in case it is wrapped by a folder: unwrap it
         let wrappedPath = path.join(tmpSketchPath,filebasename);
         let unwrappedPathTmp = tmpSketchPath + 'tmp';
         if (fs.existsSync(wrappedPath) && fs.lstatSync(wrappedPath).isDirectory()) {
-            debug('wrapped directory exists > move files');
-            fs.copySync(wrappedPath, tmpSketchPath); // TODO: clean up. use move instead of copy. move hase issues so far.
+          debug('wrapped directory exists > move files');
+          fs.copySync(wrappedPath, tmpSketchPath); // TODO: clean up. use move instead of copy. move hase issues so far.
         }
-    }
-    else debug('Unknown file format: ' + extension);
-    
-    // TODO: find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
-    let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')
-    
-    // console.log(_options)
-    // console.log(typeof _options.fullscreen === 'undefined')
-    
-    // TODO: This changes the processing settings permanently. Use command line arguments instead, once this is solved: https://github.com/processing/processing/issues/5921
-    hideBackground()
-    
-    if (typeof _options.fullscreen === 'undefined' || _options.fullscreen) fullScreen(pathToMainFile)
+        preprocessCode()
+      });
 
-    return tmpSketchPath;
+      unzipper.on('progress', function (fileIndex, fileCount) {
+        debug('Extracted file ' + (fileIndex + 1) + ' of ' + fileCount);
+      });
+
+      unzipper.extract({
+        path: tmpSketchPath,
+        // filter: function (file) {
+        //     return file.type !== "SymbolicLink";
+        // }
+      });
+    
+    }
+    else console.log('Unknown file format: ' + extension);
+  
+    function preprocessCode() {
+      // TODO: find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
+      let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')            
+      // TODO: This changes the processing settings permanently. Use command line arguments instead, once this is solved: https://github.com/processing/processing/issues/5921
+      hideBackground()
+      if (typeof _options.fullscreen === 'undefined' || _options.fullscreen) fullScreen(pathToMainFile)
+
+      resolve(tmpSketchPath);
+    }
+  });
 }
 
 function cleanUp() {
