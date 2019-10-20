@@ -12,9 +12,23 @@
     "test-coveralls": "npm run lint && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- -R spec && npm run coveralls"
   },
   "keywords": [
-    "openframe"
+    "openframe",
+    "processing",
+    "art"
   ],
-  "author": "Karlos gl liberal",
+  "author": {
+    "name": "Jeremias Volker",
+    "url": "http://jeremiasvolker.com"
+  },
+  "contributors" : [
+    {
+      "name": "Jeremias Volker",
+      "url": "http://jeremiasvolker.com"
+    },
+    {
+      "name": "Karlos gl liberal"
+    }
+  ],
   "license": "GPL-3.0",
   "devDependencies": {
     "coveralls": "^2.11.9",
