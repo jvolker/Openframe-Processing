@@ -7,11 +7,11 @@ var pjson = require('./package.json'),
     unzip = require('unzip'),
     sync = require('synchronize'),
     replace = require('replace-in-file'),
-    os = require('os');
+    os = require('os')
 
-let tmpDir = '/tmp/';
+let tmpDir = '/tmp/'
 // TODO: the preferences are stored in different path on each OS. This currently only works on the Pi
-let pathToProcessingPreferencesTxt = path.join(os.homedir(),".processing/preferences.txt");
+let pathToProcessingPreferencesTxt = path.join(os.homedir(),'.processing/preferences.txt')
 
 /**
  *
@@ -35,19 +35,19 @@ module.exports = new Extension({
         'download': true,
         'start_command': function(options, tokens) {
 
-            tokens['$tmpSketchPath'] = prepareSketch(options, tokens);
+            tokens['$tmpSketchPath'] = prepareSketch(options, tokens)
 
           // 1. clone template .xinitrc
             var filePath = _cloneTemplate(this.xinitrcTplPath),
           // 2. parse options from options into tokens
-                _tokens = _extendTokens(options, tokens);
+                _tokens = _extendTokens(options, tokens)
           // 3. replace tokens in .xinitrc
-            _replaceTokens(filePath, _tokens);
+            _replaceTokens(filePath, _tokens)
           // 4. return xinit
-            var command = 'xinit ' + filePath;
+            var command = 'xinit ' + filePath
           // console.log(command)
 
-            return command;
+            return command
         },
         // how do we stop this type of artwork?
         'end_command': 'pkill -f X',
@@ -59,7 +59,7 @@ module.exports = new Extension({
         // },
         xinitrcTplPath: __dirname + '/scripts/.xinitrc.tpl'
     }
-});
+})
 
 
 function prepareSketch(_options, _tokens) {
@@ -67,7 +67,7 @@ function prepareSketch(_options, _tokens) {
         filepath = _tokens.$filepath, // downloaded file
         extension = path.extname(filename),
         filebasename = path.basename(filename, extension),
-        tmpSketchPath = path.join(tmpDir, filebasename);
+        tmpSketchPath = path.join(tmpDir, filebasename)
 
     // debug(filename)
     // debug(filepath)
@@ -75,58 +75,58 @@ function prepareSketch(_options, _tokens) {
     // debug(filebasename)
     // debug(tmpSketchPath)
 
-    if (extension == '.pde') {
-        debug('copy sketch to parent folder');
+    if (extension === '.pde') {
+        debug('copy sketch to parent folder')
 
-        fs.mkdirp(tmpSketchPath);
-        fs.copySync(filepath, path.join(tmpSketchPath,filename));
+        fs.mkdirp(tmpSketchPath)
+        fs.copySync(filepath, path.join(tmpSketchPath,filename))
     }
-    else if (extension == '.zip') {
-        debug('unzip sketch');
+    else if (extension === '.zip') {
+        debug('unzip sketch')
 
         sync.fiber(function() {
-            data = sync.await(
+            sync.await(
           fs.createReadStream(filepath)
           .pipe(unzip.Extract({path: tmpSketchPath}))
           .on('finish', sync.defer())
-        );
-        });
+        )
+        })
 
       //in case it is wrapped by a folder: unwrap it
-        let wrappedPath = path.join(tmpSketchPath,filebasename);
-        let unwrappedPathTmp = tmpSketchPath + 'tmp';
+        let wrappedPath = path.join(tmpSketchPath,filebasename)
+        // let unwrappedPathTmp = tmpSketchPath + 'tmp'
         if (fs.existsSync(wrappedPath) && fs.lstatSync(wrappedPath).isDirectory()) {
-            debug('wrapped directory exists > move files');
-            fs.copySync(wrappedPath, tmpSketchPath); // TODO: clean up. use move instead of copy. move hase issues so far.
+            debug('wrapped directory exists > move files')
+            fs.copySync(wrappedPath, tmpSketchPath) // TODO: clean up. use move instead of copy. move hase issues so far.
         }
     }
-    else debug('Unknown file format: ' + extension);
-    
+    else debug('Unknown file format: ' + extension)
+
     // TODO: find and use main PDE file in ZIP package that has setup() and draw() regardless of the ZIP files name
     let pathToMainFile = path.join(tmpSketchPath,filebasename + '.pde')
-    
+
     // console.log(_options)
     // console.log(typeof _options.fullscreen === 'undefined')
-    
+
     // TODO: This changes the processing settings permanently. Use command line arguments instead, once this is solved: https://github.com/processing/processing/issues/5921
     hideBackground()
-    
+
     if (typeof _options.fullscreen === 'undefined' || _options.fullscreen) fullScreen(pathToMainFile)
 
-    return tmpSketchPath;
+    return tmpSketchPath
 }
 
 function cleanUp() {
-  fs.readdir(tmpDir, (err, files) => {
-    files.forEach(file => {
-      debug(file)
+    fs.readdir(tmpDir, (err, files) => {
+        files.forEach(file => {
+            debug(file)
+        })
     })
-  })
 }
 
 function fullScreen(pathToMainFile) {
-  
-  let data = `  
+
+    let data = `  
     @Override
     public void size(int width, int height) {
       fullScreen();
@@ -136,21 +136,21 @@ function fullScreen(pathToMainFile) {
     public void size(int width, int height, String renderer) {
       fullScreen(renderer);
     }`
-  
-  fs.appendFileSync(pathToMainFile, data, 'utf8');
+
+    fs.appendFileSync(pathToMainFile, data, 'utf8')
 }
 
 function hideBackground() {
-  debug('hideBackground')
-    
+    debug('hideBackground')
+
   // change color of background and stop button to black
-  var results = replace.sync({
-    files: pathToProcessingPreferencesTxt,
-    from: [ /(run.present.bgcolor=)(.*)/g , /(run.present.stop.color=)(.*)/g ],
-    to: '$1#000000',
+    var results = replace.sync({
+        files: pathToProcessingPreferencesTxt,
+        from: [/(run.present.bgcolor=)(.*)/g , /(run.present.stop.color=)(.*)/g],
+        to: '$1#000000',
     // dry: true
-  });
-   
+    })
+
   // debug(results);
 }
 
@@ -164,26 +164,26 @@ function hideBackground() {
 function _extendTokens(options, tokens) {
     var _tokens = {},
         _options = options,
-        expectedKeys = ['flags'];
+        expectedKeys = ['flags']
 
     // if options is not an object, we'll just use an empty one
     if (typeof(options) !== 'object') {
-        _options = {};
+        _options = {}
     }
 
     // shallow-copy the original tokens object
     for (let key in tokens) {
-        _tokens[key] = tokens[key];
+        _tokens[key] = tokens[key]
     }
 
     // copy expected arguments from options to the new tokens object
     // defaulting to an emptystring
     for (let key of expectedKeys) {
         // prepend keys with a dollar-sign for template-replacement
-        _tokens['$'+key] = _options[key] || '';
+        _tokens['$'+key] = _options[key] || ''
     }
 
-    return _tokens;
+    return _tokens
 }
 
 /**
@@ -194,7 +194,7 @@ function _extendTokens(options, tokens) {
  * @return {string} The string with tokens replaced.
  */
 function _replaceTokens(filePath, tokens) {
-    debug(_replaceTokens, filePath, tokens);
+    debug(_replaceTokens, filePath, tokens)
 
     function replace(token, value) {
         // tokens start with a $ which needs to be escaped, oops
@@ -203,14 +203,14 @@ function _replaceTokens(filePath, tokens) {
             //  otherwise it is used as a backreference
             _value = value.replace(/&/g, '\\&'),
             // use commas as delims so that we don't need to escape value, which might be a URL
-            cmd = 'sed -i "s,' + _token + ',' + _value + ',g" ' + filePath;
-        execSync(cmd);
+            cmd = 'sed -i "s,' + _token + ',' + _value + ',g" ' + filePath
+        execSync(cmd)
     }
 
-    var key;
+    var key
     for (key in tokens) {
         // TODO: better token replacement (global replacement?
-        replace(key, tokens[key]);
+        replace(key, tokens[key])
     }
 }
 
@@ -221,11 +221,11 @@ function _replaceTokens(filePath, tokens) {
  */
 function _cloneTemplate(filePath) {
     var newFilePath = filePath.replace('.tpl', ''),
-        cmd = 'cp -f ' + filePath + ' ' + newFilePath;
+        cmd = 'cp -f ' + filePath + ' ' + newFilePath
 
-    execSync(cmd);
+    execSync(cmd)
 
-    return newFilePath;
+    return newFilePath
 }
 
 
