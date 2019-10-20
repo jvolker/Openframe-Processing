@@ -1,90 +1,44 @@
 var assert = require('assert'),
-    sinon = require('sinon'),
-    Extension = require('../extension'),
-    noop = function() {},
-    OF;
-
-beforeEach(function() {
-    OF = {
-        getPubsub: sinon.spy(),
-        getRest: sinon.spy(),
-        getFrame: sinon.spy(),
-        addFormat: sinon.spy()
-    };
-});
+    exec = require('child_process').exec,
+    fs = require('fs'),
+    Extension = require('openframe-extension'),
+    ProcessingExtension = require('../extension')
 
 describe('instantiation', function() {
-    it('should throw an exception if format or init not defined', function() {
-        try {
-            new Extension({});
-        } catch(e) {
-            assert.equal(e.message, 'Extensions must define an init method or a format definition object.');
-        }
-    });
-});
+    it('should be an instance of type Extension', function() {
+        assert(ProcessingExtension instanceof Extension)
+    })
+})
 
-describe('_init', function() {
-    it('should set _initialized to true when _init is called', function() {
-        var extension = new Extension({
-            init: noop
-        });
+describe('properties', function() {
+    it('should include all required format properties', function() {
+        var format = ProcessingExtension.props.format
 
-        assert(!extension._initialized);
+        assert(format.name)
+        assert(typeof format.name === 'string')
 
-        extension._init(OF);
+        assert(format.display_name)
+        assert(typeof format.display_name === 'string')
 
-        assert(extension._initialized);
-    });
+        assert(format.download !== undefined)
+        assert(typeof format.download === 'boolean')
 
-    it('should attach API references from the frame controller for pubsub, rest, and frame model', function() {
-        var extension = new Extension({
-            init: noop
-        });
+        assert(format.start_command)
+        assert(typeof format.start_command === 'string' || typeof format.start_command === 'function')
+        // 
+        // if (typeof format.start_command === 'function') {
+        //     assert(typeof format.start_command({}, {
+        //         $url: 'https://raw.githubusercontent.com/processing/processing-docs/master/content/examples/Topics/Motion/Morph/Morph.pde',
+        //         $id: '5d8540b3a38167076035bd5c',
+        //         $filepath: '/tmp/5d8540b3a38167076035bd5cMorph.pde',
+        //         $filename: 'Morph.pde'
+        // 
+        //     }) === 'string')
+        // }
 
-        extension._init(OF);
+        assert(format.end_command)
+        assert(typeof format.end_command === 'string')
+    })
+})
 
-        assert(OF.getPubsub.called);
-        assert(OF.getRest.called);
-        assert(OF.getFrame.called);
-    });
 
-    it('should not re-initialize if init called more than once', function() {
-        var extension = new Extension({
-            init: noop
-        });
-
-        extension._init(OF);
-        extension._init(OF);
-
-        console.log('---- ', OF.getPubsub.callCount);
-
-        assert(OF.getPubsub.calledOnce);
-
-    });
-});
-
-describe('init', function() {
-    it('should call the supplied init function', function() {
-        var init = sinon.spy(),
-            extension = new Extension({
-                init: init
-            });
-
-        extension._init(OF);
-
-        assert(init.called);
-    });
-});
-
-describe('format', function() {
-    it('should call addFormat if a format object is specified', function() {
-        var extension = new Extension({
-            // TODO: no validation on format object at present
-            format: {}
-        });
-
-        extension._init(OF);
-
-        assert(OF.addFormat.called);
-    });
-});

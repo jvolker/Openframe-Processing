@@ -20,7 +20,7 @@
     "name": "Jeremias Volker",
     "url": "http://jeremiasvolker.com"
   },
-  "contributors" : [
+  "contributors": [
     {
       "name": "Jeremias Volker",
       "url": "http://jeremiasvolker.com"
@@ -31,10 +31,10 @@
   ],
   "license": "GPL-3.0",
   "devDependencies": {
-    "coveralls": "^2.11.9",
+    "coveralls": "^3.0.7",
     "eslint": "^2.9.0",
     "istanbul": "^0.4.2",
-    "mocha": "^2.3.4",
+    "mocha": "^6.2.2",
     "sinon": "^1.17.2"
   },
   "dependencies": {
