@@ -1,14 +1,6 @@
 # Openframe Processing extension
 
-*Author* 
-[karlosgliberal](http://labs.interzonas.info)
-Twitter (@patxangas)(http://twitter.com/patxangas)
-
-*Contributor*
-[Jeremias Volker](http://www.jeremiasvolker.com)
-
 This extension runs interactive [Processing](http://processing.org) sketches on a [Raspberry Pi](https://www.raspberrypi.org/) within [Openframe](http://openframe.io) – "an open source platform for artists, curators and art enthusiasts to share, discover and display digital art". 
-
 
 ## Installation
 
@@ -57,3 +49,11 @@ Currently, you have to upload your artwork to a publicly reachable webspace. If 
 ## Thanks
 
 Thanks to Jonathan Wohl and Isaac Bertran for this amazing project
+
+*Author*
+[Jeremias Volker](http://www.jeremiasvolker.com)  
+Twitter (@jeremiasvolker)(http://twitter.com/jeremiasvolker)
+
+*Initiator* 
+[karlosgliberal](http://labs.interzonas.info)  
+Twitter (@patxangas)(http://twitter.com/patxangas)
