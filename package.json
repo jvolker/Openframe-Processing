@@ -1,6 +1,6 @@
 {
   "name": "openframe-processing",
-  "version": "0.2.0",
+  "version": "2.0.0",
   "description": "Openframe extension which adds support for Processing",
   "main": "extension.js",
   "scripts": {
