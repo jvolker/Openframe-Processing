@@ -4,7 +4,7 @@ var pjson = require('./package.json'),
     execSync = require('child_process').execSync,
     fs = require('fs-extra'),
     path = require('path'),
-    DecompressZip = require('decompress-zip')
+    DecompressZip = require('decompress-zip'),
     replace = require('replace-in-file'),
     os = require('os');
 
@@ -84,13 +84,14 @@ function prepareSketch(_options, _tokens) {
     // debug(filebasename)
     // debug(tmpSketchPath)
 
-    if (extension == '.pde') {
+    if (extension === '.pde') {
       debug('copy sketch to parent folder');
 
       fs.mkdirp(tmpSketchPath);
       fs.copySync(filepath, path.join(tmpSketchPath,filename));
+      preprocessCode()
     }
-    else if (extension == '.zip') {
+    else if (extension === '.zip') {
       debug('unzip sketch');
       
       var unzipper = new DecompressZip(filepath)
