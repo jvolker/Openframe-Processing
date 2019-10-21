@@ -25,14 +25,14 @@ describe('properties', function() {
 
         assert(format.start_command)
         assert(typeof format.start_command === 'string' || typeof format.start_command === 'function')
-        // 
+        //
         // if (typeof format.start_command === 'function') {
         //     assert(typeof format.start_command({}, {
         //         $url: 'https://raw.githubusercontent.com/processing/processing-docs/master/content/examples/Topics/Motion/Morph/Morph.pde',
         //         $id: '5d8540b3a38167076035bd5c',
         //         $filepath: '/tmp/5d8540b3a38167076035bd5cMorph.pde',
         //         $filename: 'Morph.pde'
-        // 
+        //
         //     }) === 'string')
         // }
 
