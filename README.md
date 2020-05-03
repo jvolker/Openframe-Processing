@@ -7,10 +7,9 @@ This extension runs interactive [Processing](http://processing.org) sketches on 
 
 ### Prerequisites
 
-- **Recommended** version `2.x.x` of `openframe-processing` requires features of Openframe that are not avaialable in a release yet. To install Openframe from the latest `master` branch including those features, follow the official guide https://docs.openframe.io/#getting-started to prepare the installation. Replace the command in `2.2 Install Openframe` of the guide with `bash -c "$(curl https://gist.githubusercontent.com/jvolker/7be85a005b98fbd40b793d13b7250a44/raw/)"`. 
-    -  Version  2.x.x adds support  for `.zip` files with contributed libraries. In earlier versions `.zip` are considered experimental as full extraction of the package is not guaranteed when the sketch is run.
-- version `1.x.x` of `openframe-processing` works with `openframe` version `0.4.9`. Follow the [Openframe Getting started guide](https://docs.openframe.io/#getting-started)
+Follow the official guide https://docs.openframe.io/#getting-started to install Openframe. 
 
+Since version `2.x.x` of this extension, Openframe `v0.4.12` or higher is required.
 
 ### Instructions
 
