@@ -40,9 +40,6 @@ module.exports = new Extension({
               psList().then(function(processes) {
                     processes = processes.filter(function(process) { process.name.indexOf('Xorg') > -1; });
                     let commandLineMode = processes.length > 0;
-
-                    // parse options from args into tokens
-                    let _tokens = _extendTokens(args, tokens);
                     
                     prepareSketch(options, tokens).then(function(result) {
                         tokens['$tmpSketchPath'] = result
