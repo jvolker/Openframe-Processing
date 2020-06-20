@@ -57,7 +57,8 @@ module.exports = new Extension({
             })
         },
         // how do we stop this type of artwork?
-        'end_command': 'pkill -f X && pkill -f java',
+        // 'end_command': 'pkill -f X && pkill -f java',
+        'end_command': 'pkill -f java',
         // function () {
         //   // cleanUp()
         //   console.log(end_command)
