@@ -43,7 +43,8 @@
     "fs-extra": "^8.1.0",
     "openframe-extension": "^0.1.0",
     "replace-in-file": "^4.1.3",
-    "unzip": "^0.1.11"
+    "unzip": "^0.1.11",
+    "ps-list": "^5.0.1"
   },
   "repository": {
     "type": "git",
