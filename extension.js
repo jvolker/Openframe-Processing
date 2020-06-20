@@ -65,12 +65,9 @@ module.exports = new Extension({
                         // desktop mode
                         else {
                           
-                            // var command = '/usr/bin/chromium --noerrdialogs --kiosk --incognito $flags "$url"'
-                            var command = '/usr/local/bin/processing-java --present '
-                             // _tokens['$flags'].forEach(function(flag, index) {
-                             //   command += '--' + flag + ' ';              
-                             // })
-                            command += '--sketch=' + _tokens['$tmpSketchPath']
+                            var command = '/usr/local/bin/processing-java '
+                            command += '--sketch=' + _tokens['$tmpSketchPath'] + ' '
+                            command += '--present'
                             // console.log(command)
                             return resolve(command);
                         }        
