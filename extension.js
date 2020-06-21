@@ -6,7 +6,8 @@ var pjson = require('./package.json'),
     path = require('path'),
     DecompressZip = require('decompress-zip'),
     replace = require('replace-in-file'),
-    os = require('os')
+    os = require('os'),
+    psList = require('ps-list');
 
 let tmpDir = '/tmp/'
 // TODO: the preferences are stored in different path on each OS. This currently only works on the Pi
@@ -35,29 +36,48 @@ module.exports = new Extension({
         'start_command': function(options, tokens) {
             var thisExtension = this
             return new Promise(function(resolve, reject) {
+              // is X server running?
+              psList().then(function(processes) {
+                    processes = processes.filter(function(process) { process.name.indexOf('Xorg') > -1; });
+                    let commandLineMode = processes.length > 0;
+                    
+                    prepareSketch(options, tokens).then(function(result) {
+                        tokens['$tmpSketchPath'] = result
 
-                prepareSketch(options, tokens).then(function(result) {
-                    tokens['$tmpSketchPath'] = result
-
-               // 1. clone template .xinitrc
-                    debug('clone template')
-                    var filePath = _cloneTemplate(thisExtension.xinitrcTplPath)
-               // 2. parse options from options into tokens
-                    debug('extend tokens')
-                    var _tokens = _extendTokens(options, tokens)
-               // 3. replace tokens in .xinitrc
-                    debug('replace tokens')
-                    _replaceTokens(filePath, _tokens)
-               // 4. return xinit
-                    debug('build command')
-                    var command = 'xinit ' + filePath
-               // console.log(command)
-                    return resolve(command)
-                })
+                        // 1. clone template .xinitrc
+                        debug('clone template')
+                        var filePath = _cloneTemplate(thisExtension.xinitrcTplPath)
+                        // 2. parse options from options into tokens
+                        debug('extend tokens')
+                        var _tokens = _extendTokens(options, tokens)
+                        // 3. replace tokens in .xinitrc
+                        debug('replace tokens')
+                        _replaceTokens(filePath, _tokens)
+                        // 4. return xinit
+                        debug('build command')
+                        
+                        // command line mode
+                        if (commandLineMode) {
+                          var command = 'xinit ' + filePath
+                          // console.log(command)
+                          return resolve(command)
+                        }
+                        // desktop mode
+                        else {
+                          
+                            var command = '/usr/local/bin/processing-java '
+                            command += '--sketch=' + _tokens['$tmpSketchPath'] + ' '
+                            command += '--present'
+                            // console.log(command)
+                            return resolve(command);
+                        }        
+                    })
+              });        
             })
         },
         // how do we stop this type of artwork?
-        'end_command': 'pkill -f X && pkill -f java',
+        // 'end_command': 'pkill -f X && pkill -f java',
+        'end_command': 'pkill -f java',
         // function () {
         //   // cleanUp()
         //   console.log(end_command)

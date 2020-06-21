@@ -22,7 +22,7 @@ if [ $os == "Linux" ]; then
 
     # on Linux distributions
     # on RaspberryPi
-    if [ $arq == "armv7l" ]; then
+    if [ $arq == "armv7l" ] || [ $arq == "armv6l" ]; then
         curl https://processing.org/download/install-arm.sh | sudo sh
     else
       echo "Install Processing manually from: https://processing.org/download/"
